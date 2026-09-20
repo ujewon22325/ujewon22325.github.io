@@ -1,1 +1,135 @@
-The requested file reference is not currently visible. Use files.search or files.list to rediscover the file, then retry with a returned ref_id or file_id.
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b1a22">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="application-name" content="운동노트">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="stylesheet" href="app.css">
+<title>운동노트 · 주간 루틴</title>
+</head>
+<body>
+<button id="installBtn">앱 설치</button>
+<div class="app">
+<header class="top">
+  <div class="brand"><div class="logo">🏋</div><div><div class="title">운동노트</div><div class="sub">WEEKLY TRAINING & DIET</div></div></div>
+  <div class="privacy">이 기기에 저장되는 개인 기록</div>
+</header>
+
+<nav class="tabs">
+  <button class="tab active" data-tab="log">🏋 운동</button>
+  <button class="tab" data-tab="diet">🍽 식단</button>
+  <button class="tab" data-tab="history">◴ 기록</button>
+  <button class="tab" data-tab="weekly">▦ 주간 분석</button>
+  <button class="tab" data-tab="guide">▣ 안내</button>
+</nav>
+
+<section id="tab-log">
+  <div class="hero">
+    <div><div class="date" id="todayText"></div><div class="headline">오늘도, 한 세트씩.</div></div>
+    <div class="streak"><span class="num" id="weekCount">0</span><span class="small"> / 3일</span><div class="small">이번 주 근력운동</div></div>
+  </div>
+
+  <div class="card plan-card">
+    <div class="section-title"><h2>이번 주 계획</h2><span class="pill" id="todayPlanPill">오늘</span></div>
+    <div class="plan-main" id="todayPlanMain"></div>
+    <div class="plan-sub" id="todayPlanSub"></div>
+    <div class="week-plan" id="weekPlan"></div>
+  </div>
+
+  <div class="card summary">
+    <div class="left"><div class="muted">다음 근력 루틴</div><div class="bigA" id="nextRoutine">A</div><div class="muted">전신 운동</div></div>
+    <div><div class="muted">최근 기록</div><div class="strong" id="lastWorkout">아직 기록이 없어요</div><div class="muted" id="lastWorkoutSub">첫 기록부터 차곡차곡</div></div>
+  </div>
+
+  <div class="card">
+    <div class="section-title"><h2>운동 기록</h2><div class="pill" id="recommendedPill">근력 40~45분</div></div>
+    <div class="grid2">
+      <div class="field"><label>운동 날짜</label><input id="workoutDate" type="date"></div>
+      <div class="field" id="routineWrap"><label>근력 루틴</label><select id="routineSelect"><option value="A">전신 A</option><option value="B">전신 B</option></select></div>
+    </div>
+    <div class="field" id="volumeWrap"><label>운동량</label><select id="volumeSelect"><option value="2">적응 · 전부 2세트</option><option value="3">기본 · 전부 3세트</option></select></div>
+    <div id="strengthArea"><div id="exerciseList" class="exercise-list"></div></div>
+
+    <div class="divider"></div>
+    <div class="section-title"><h2 style="font-size:19px">유산소 기록</h2><span class="tiny" id="cardioGuide"></span></div>
+    <div class="grid2">
+      <div class="field"><label>종류</label><select id="cardioType"><option value="">안 함</option><option>실내 자전거</option><option>빠른 걷기</option><option>자전거</option><option>기타</option></select></div>
+      <div class="field"><label>시간(분)</label><input id="cardioMinutes" type="number" min="0" step="1" placeholder="예: 15"></div>
+    </div>
+    <div class="actions"><button class="secondary" id="resetBtn">오늘 입력 초기화</button><button class="primary" id="saveBtn">운동 기록 저장</button></div>
+  </div>
+
+  <div class="card">
+    <div class="section-title"><h2>오늘은 쉬어야겠다면</h2><span class="pill rest">휴식 기록</span></div>
+    <div class="grid2">
+      <div class="field"><label>휴식 이유</label><select id="restReason"><option>컨디션 난조</option><option>피로 누적</option><option>수면 부족</option><option>근육통</option><option>통증/부상 우려</option><option>일정 때문에 휴식</option><option>계획된 휴식</option><option>기타</option></select></div>
+      <div class="field"><label>메모(선택)</label><input id="restMemo" placeholder="예: 몸살 기운, 허리 뻐근함"></div>
+    </div>
+    <button class="restbtn" id="restBtn" style="width:100%">이 날짜를 휴식으로 기록</button>
+    <div class="tiny" style="margin-top:10px">같은 날짜에 기존 운동 기록이 있으면 휴식 기록으로 대체됩니다.</div>
+  </div>
+</section>
+
+<section id="tab-diet" class="hidden">
+  <div class="card">
+    <div class="section-title"><h2>식단 기록</h2><span class="pill">하루 단위</span></div>
+    <div class="field"><label>날짜</label><input id="dietDate" type="date"></div>
+    <div id="mealList"></div>
+    <div class="daily-total" id="dietTotals"></div>
+    <div class="actions"><button class="secondary" id="dietResetBtn">입력 초기화</button><button class="primary" id="dietSaveBtn">식단 저장</button></div>
+    <div class="tiny" style="margin-top:10px">열량·영양소를 모르면 음식 내용만 적어도 주간 분석에 포함됩니다.</div>
+  </div>
+</section>
+
+<section id="tab-history" class="hidden">
+  <div class="card"><div class="section-title"><h2>운동·휴식 기록</h2><button class="secondary" id="exportBtn">전체 JSON 백업</button></div><div id="historyList"></div></div>
+  <div class="card"><div class="section-title"><h2>식단 기록</h2><span class="pill">최근 14일</span></div><div id="dietHistoryList"></div></div>
+</section>
+
+<section id="tab-weekly" class="hidden">
+  <div class="card">
+    <div class="section-title"><div><h2>주간 분석 준비</h2><div class="muted" id="weekRange"></div></div><span class="pill">월~일</span></div>
+    <div class="field"><label>이 주에 포함되는 날짜 선택</label><input id="weekAnchor" type="date"></div>
+    <div class="week-grid" id="weekSummary"></div>
+  </div>
+  <div class="card">
+    <div class="section-title"><h2>ChatGPT 분석</h2><span class="pill">공유</span></div>
+    <div class="analysis-box" id="analysisPreview"></div>
+    <div class="actions"><button class="secondary" id="copyAnalysisBtn">분석문 복사</button><button class="primary" id="shareAnalysisBtn">ChatGPT로 분석 보내기</button></div>
+    <div class="tiny" style="margin-top:10px">갤럭시에서는 공유창이 뜨면 ChatGPT를 선택하세요. 공유가 지원되지 않으면 분석문을 복사하고 ChatGPT 웹을 엽니다.</div>
+  </div>
+</section>
+
+<section id="tab-guide" class="hidden">
+  <div class="card guide">
+    <h2>기본 주간 루틴</h2>
+    <ul>
+      <li>월: 전신 A 40~45분 + 자전거 10~15분</li>
+      <li>화: 퇴근 후 휴식</li>
+      <li>수: 전신 B 40~45분 + 자전거 10~15분</li>
+      <li>목: 퇴근 후 휴식</li>
+      <li>금: 전신 A 40~45분, 유산소 생략 가능</li>
+      <li>토: 자전거·빠른 걷기 30~40분</li>
+      <li>일: 휴식</li>
+    </ul>
+    <div class="divider"></div>
+    <ul>
+      <li>몸 상태가 좋지 않으면 예정된 운동일도 휴식으로 기록할 수 있습니다.</li>
+      <li>첫 2주는 적응 모드로 각 운동 2세트.</li>
+      <li>준비 세트는 기록에서 제외.</li>
+      <li>통증이 있는 동작은 즉시 중단하고 필요하면 휴식으로 전환.</li>
+    </ul>
+  </div>
+</section>
+
+<div class="foot">운동·식단 기록은 이 기기의 브라우저 저장공간(localStorage)에 보관됩니다. 주간 분석을 보낼 때만 선택한 기록 요약이 공유됩니다.</div>
+</div>
+<script src="app.js"></script>
+</body>
+</html>
