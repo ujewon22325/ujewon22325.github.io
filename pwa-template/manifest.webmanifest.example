@@ -1,0 +1,25 @@
+{
+  "id": "/__APP_SLUG__/",
+  "name": "__APP_NAME__",
+  "short_name": "__APP_NAME__",
+  "start_url": "/__APP_SLUG__/",
+  "scope": "/__APP_SLUG__/",
+  "display": "standalone",
+  "background_color": "#111827",
+  "theme_color": "#111827",
+  "lang": "ko-KR",
+  "icons": [
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
