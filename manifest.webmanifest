@@ -1,0 +1,18 @@
+{
+  "id": "./",
+  "name": "운동노트 · A/B 루틴",
+  "short_name": "운동노트",
+  "description": "나의 비공개 A/B 근력운동 기록 앱",
+  "lang": "ko-KR",
+  "start_url": "./?source=pwa",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "portrait-primary",
+  "background_color": "#0b1a22",
+  "theme_color": "#0b1a22",
+  "icons": [
+    {"src":"icons/icon-192.png","sizes":"192x192","type":"image/png","purpose":"any maskable"},
+    {"src":"icons/icon-512.png","sizes":"512x512","type":"image/png","purpose":"any maskable"}
+  ]
+}
