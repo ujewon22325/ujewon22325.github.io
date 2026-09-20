@@ -61,6 +61,12 @@ header{display:flex;justify-content:space-between;align-items:center;padding:7px
 <section id="history" class="hidden">
 <div class="card"><h2>운동 기록</h2><div id="workHistory"></div></div>
 <div class="card"><h2>최근 식단</h2><div id="dietHistory"></div></div>
+<div class="card">
+<h2>데이터 백업</h2>
+<div class="muted" style="margin-bottom:12px">지금까지 저장한 운동 기록과 식단 기록을 JSON 파일 하나로 내보냅니다.</div>
+<button id="exportAllData" class="btn primary" style="width:100%">전체 기록 내보내기</button>
+<div class="small" style="margin-top:9px">파일은 기기에 저장되며 현재 기록은 삭제되지 않습니다.</div>
+</div>
 </section>
 
 <section id="week" class="hidden">
@@ -140,12 +146,30 @@ function analysisText(){var w=weekData(),out='내 1주일 운동·식단 기록�
 function renderWeekly(){var w=weekData();$('#weekRange').textContent=iso(w.m)+' ~ '+iso(w.e);var box=$('#weekSummary');box.innerHTML='';w.days.forEach(function(x){var el=document.createElement('div');el.className='day';el.innerHTML='<b>'+x.day+'</b><div>'+x.plan.title+'<div class="small">실제: '+describeWork(x.work)+'</div><div class="small">식단: '+describeDiet(x.diet)+'</div></div><span></span>';box.appendChild(el)});$('#analysis').textContent=analysisText()}
 async function copyAnalysis(){try{await navigator.clipboard.writeText(analysisText());alert('분석문을 복사했어요. 이 채팅에 붙여넣으면 내가 분석할 수 있어요.')}catch(e){alert('복사가 안 됐어요. 아래 분석문을 길게 눌러 복사해 주세요.')}}
 async function shareAnalysis(){var text=analysisText();if(navigator.share){try{await navigator.share({title:'주간 운동·식단 분석',text:text});return}catch(e){if(e.name==='AbortError')return}}try{await navigator.clipboard.writeText(text)}catch(e){}window.open('https://chatgpt.com/','_blank');alert('분석문을 복사했어요. ChatGPT에 붙여넣어 주세요.')}
+function exportAllData(){
+  var data={
+    app:'운동노트',
+    schemaVersion:1,
+    exportedAt:new Date().toISOString(),
+    workoutHistory:loadWork(),
+    dietHistory:loadDiet()
+  };
+  var blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a');
+  a.href=url;
+  a.download='workout-note-backup-'+localDate()+'.json';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(function(){URL.revokeObjectURL(url)},1000);
+}
 function refresh(){refreshCount();renderWeekPlan();renderHistories();renderWeekly()}
 $$('.tab').forEach(function(b){b.onclick=function(){$$('.tab').forEach(function(x){x.classList.remove('on')});b.classList.add('on');['work','diet','history','week','guide'].forEach(function(id){$('#'+id).classList.toggle('hidden',id!==b.dataset.tab)});if(b.dataset.tab==='diet')loadDietForm();if(b.dataset.tab==='week')renderWeekly()}})
 $('#wdate').value=localDate();$('#ddate').value=localDate();$('#anchor').value=localDate();$('#todayText').textContent=koDate(localDate());
 renderExercises();applySchedule();renderMealForm();loadDietForm();refresh();
 $('#wdate').onchange=applySchedule;$('#routine').onchange=renderExercises;$('#volume').onchange=renderExercises;
-$('#saveWorkout').onclick=saveWorkout;$('#saveRest').onclick=saveRest;$('#saveDiet').onclick=saveDiet;$('#clearDiet').onclick=clearDiet;$('#ddate').onchange=loadDietForm;$('#anchor').onchange=renderWeekly;$('#copyAnalysis').onclick=copyAnalysis;$('#shareAnalysis').onclick=shareAnalysis;
+$('#saveWorkout').onclick=saveWorkout;$('#saveRest').onclick=saveRest;$('#saveDiet').onclick=saveDiet;$('#clearDiet').onclick=clearDiet;$('#ddate').onchange=loadDietForm;$('#anchor').onchange=renderWeekly;$('#copyAnalysis').onclick=copyAnalysis;$('#shareAnalysis').onclick=shareAnalysis;$('#exportAllData').onclick=exportAllData;
 if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('./sw.js',{scope:'./'})})}
 </script>
 </body>
