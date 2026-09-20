@@ -3,11 +3,29 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta http-equiv="refresh" content="0;url=/workout/">
 <title>운동노트 이동 중</title>
-<script>location.replace('/workout/');</script>
 </head>
 <body>
-<p><a href="/workout/">운동노트 열기</a></p>
+<p>운동앱 설정을 정리하는 중입니다.</p>
+<script>
+(async function(){
+  try{
+    if('serviceWorker' in navigator){
+      const regs=await navigator.serviceWorker.getRegistrations();
+      await Promise.all(regs.filter(function(r){
+        return r.scope===location.origin+'/';
+      }).map(function(r){return r.unregister();}));
+    }
+    if('caches' in window){
+      const keys=await caches.keys();
+      await Promise.all(keys.filter(function(k){
+        return k.indexOf('workout-note-pwa-')===0;
+      }).map(function(k){return caches.delete(k);}));
+    }
+  }catch(e){}
+  location.replace('/workout/');
+})();
+</script>
+<noscript><a href="/workout/">운동노트 열기</a></noscript>
 </body>
 </html>
