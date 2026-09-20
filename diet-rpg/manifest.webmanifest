@@ -1,0 +1,13 @@
+{
+  "id":"/diet-rpg/",
+  "name":"다이어트 RPG",
+  "short_name":"다이어트 RPG",
+  "description":"운동·체중·습관을 XP와 업적으로 게임화한 개인용 앱",
+  "start_url":"/diet-rpg/?source=pwa",
+  "scope":"/diet-rpg/",
+  "display":"standalone",
+  "background_color":"#0b1020",
+  "theme_color":"#111827",
+  "orientation":"portrait-primary",
+  "icons":[{"src":"./icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]
+}
