@@ -1,0 +1,14 @@
+<!-- head -->
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" href="./icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="./icon-192.png">
+<meta name="theme-color" content="#111827">
+
+<!-- body 마지막 -->
+<script>
+if('serviceWorker' in navigator){
+  window.addEventListener('load',function(){
+    navigator.serviceWorker.register('./sw.js',{scope:'./'}).catch(function(){});
+  });
+}
+</script>
