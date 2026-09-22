@@ -1,2 +1,2 @@
-// Browser-safe project URL and publishable key only. Never add a service-role key.
-window.WORKOUT_CLOUD = { url: '', publishableKey: '' };
+// Public browser key; access is restricted by per-account RLS.
+window.WORKOUT_CLOUD = {url:'https://jllctiakquheiajiqzym.supabase.co',publishableKey:'sb_publishable_VSvJGq9hJ7H_okvn4QNdKg_CGBf0EIr'};
