@@ -7,6 +7,7 @@ let timers=[],guest=[],alerts=[];
 const context={window:null,document:{getElementById:el,querySelector:el,visibilityState:'visible',addEventListener(){}},location:{origin:'https://example.com',pathname:'/workout/'},loadWork:()=>guest,loadDiet:()=>[],saveWork:a=>{guest=a},saveDietData(){},saveWorkout(){},saveRest(){},saveDiet(){},refresh(){},loadDietForm(){},clearDiet(){},renderExercises(){},alert:s=>alerts.push(s),confirm:()=>true,setTimeout:fn=>timers.push(fn),setInterval(){},WORKOUT_CLOUD:{url:'https://example.supabase.co',publishableKey:'public'},testSdk:{createClient:()=>client},addEventListener(){},console};context.window=context;
 let source=fs.readFileSync(__dirname+'/cloud.js','utf8').replace("await import('https://esm.sh/@supabase/supabase-js@2.57.4')",'testSdk');vm.runInNewContext(source,context);
 const flush=async()=>{while(timers.length)await timers.shift()()};
+authCallback('INITIAL_SESSION',null);
 await context.saveWork([{date:'2026-09-21'}],'2026-09-21');assert.equal(guest.length,1);
 authCallback('SIGNED_IN',{user:{id:'one',email:'one@example.test'}});await flush();
 assert.equal(context.loadWork().length,0,'guest records must not auto-upload');
