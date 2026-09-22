@@ -1,21 +1,11 @@
-# 운동노트 서버 동기화 — 연결 대기
+# Workout cloud sync
 
-이 브랜치는 연결 전 준비본입니다. 기존 공개 앱은 계속 기기 저장으로 동작합니다.
+Project: workout-note (jllctiakquheiajiqzym). Cloud schema and ownership policies are deployed. Only the public publishable key is shipped.
 
-구현: 이메일/비밀번호 로그인 및 가입, 저장 버튼으로 서버 저장, 30초 간격 및 화면 복귀 시 동기화, 수동 동기화, 기기 기록 명시적 가져오기, 로그아웃 시 계정 기록 화면 분리. 비로그인 데이터는 기존 localStorage 키에 남습니다. 같은 날짜의 가져오기는 서버 기록을 우선합니다. 동시 편집은 revision 비교로 거절하고 입력 폼을 유지합니다. 오프라인 서버 저장은 성공으로 표시하지 않으며 자동 재전송 큐는 제공하지 않습니다.
+Server verification passed: insert/update, stale revision conflict, cross-account read and write isolation, anonymous access blocked. Transactional fixtures were rolled back. Security advisors returned no lints after restricting the automatic-RLS trigger function.
 
-## 서버 연결 후 완료할 작업
-1. 사용자의 Supabase 프로젝트를 선택하거나 생성합니다. 실제 프로젝트/비용 조건 확인 없이 생성하지 않습니다.
-2. schema.sql을 migration으로 적용합니다.
-3. 이메일 인증을 켜고 Site URL과 허용 Redirect URL을 https://ujewon22325.github.io/workout/ 로 설정합니다. 메일 발송 설정도 확인합니다.
-4. cloud-config.js에 프로젝트 URL과 브라우저용 publishable/anon 키만 기입합니다. service_role, secret key, DB 비밀번호는 절대 공개 코드에 넣지 않습니다.
-5. 서로 다른 두 테스트 계정으로 RLS와 RPC 접근 제한을 검증합니다. 로그인하지 않은 접근은 차단되어야 합니다.
-6. 두 브라우저에서 저장·조회·충돌 처리, 로그인 만료, 기존 기록 가져오기를 실제 서버와 검증합니다. 테스트 기록과 계정은 정리합니다.
-7. 서버가 준비된 후 main으로 병합하고 GitHub Pages 공개 URL에서 확인합니다.
+Client mock checks passed: guest preservation, no implicit import, changed-date-only saves, conflict handling, account isolation, failure status and JS syntax. Browser sessions and actual signup email delivery still require user verification.
 
-## 검증 상태
-node check-sync.cjs: 기기 기록 보존, 암묵적 업로드 없음, 변경 날짜만 저장, 충돌 시 캐시 유지, 계정 분리, 연결 실패 표시, JS 문법 검증 통과.
-SDK 2.57.4 배포 URL 접근 확인.
-실제 Supabase DB/RLS/이메일/두 기기 종단간 검증은 서버 관리 도구 제공 후 수행해야 합니다.
+Login saves to the server when a Save button is pressed. Background polling runs every 30 seconds and on page return. Guest records stay local; explicit Import uploads missing dates only. Offline server writes do not report success and are not queued.
 
-Supabase 플러그인의 설치 완료는 확인했으나, 이 대화의 실행 가능한 도구 목록에 Supabase 기능이 노출되지 않아 프로젝트 조회 및 migration 적용은 아직 하지 않았습니다.
+Pending admin configuration: Auth Site URL / redirect allowlist should be https://ujewon22325.github.io/workout/ . Default SMTP limits recipients to organization members; use the Supabase account email initially or configure custom SMTP before inviting others.
