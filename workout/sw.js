@@ -1,6 +1,6 @@
 const CACHE_PREFIX='workout-note-pwa-';
-const CACHE=CACHE_PREFIX+'v7-youtube';
-const CORE=['./','./index.html','./manifest.webmanifest','../icons/icon-192.png','../icons/icon-512.png'];
+const CACHE=CACHE_PREFIX+'v8-cloud';
+const CORE=['./','./index.html','./cloud.js','./cloud-config.js','./manifest.webmanifest','../icons/icon-192.png','../icons/icon-512.png'];
 
 self.addEventListener('install',e=>{
   e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE)));
