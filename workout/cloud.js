@@ -2,7 +2,7 @@
 (function () {
   'use strict';
   var guestWork=loadWork, guestDiet=loadDiet, guestSaveWork=saveWork, guestSaveDiet=saveDietData;
-  var client=null, user=null, ready=false, busy=false, epoch=0, rows=[], dietDirty=false;
+  var client=null, user=null, ready=false, busy=false, epoch=0, rows=[], dietDirty=false, editVersions={}, initializing=false;
   var status=document.getElementById('cloudStatus');
   function message(s){status.textContent=s;}
   function scope(){return user && user.id;}
@@ -34,6 +34,7 @@
     finally{busy=false;}
   }
   async function save(kind,records,date){
+    if(initializing)throw Error('로그인 상태를 확인 중입니다. 잠시 후 저장해 주세요.');
     if(!user){(kind==='workout'?guestSaveWork:guestSaveDiet)(records);return;}
     if(!ready||busy)throw Error('서버 연결을 확인 중입니다. 잠시 후 다시 저장해 주세요.');
     var id=scope(), token=epoch;
@@ -42,10 +43,10 @@
     try{
       for(var record of changed){
         var old=rows.find(function(r){return r.kind===kind&&r.day===record.date});
-        var result=await client.rpc('save_workout_entry',{p_kind:kind,p_day:record.date,p_payload:record,p_revision:old?old.revision:0});
-        if(result.error){if(result.error.code==='40001')throw Error('다른 기기에서 같은 날짜를 수정했습니다. 입력 내용은 그대로 있습니다. 지금 동기화 후 내용을 확인하고 다시 저장해 주세요.');throw Error('서버에 저장하지 못했습니다. 입력 내용은 그대로입니다. 연결을 확인하고 다시 저장해 주세요.');}
+        var result=await client.rpc('save_workout_entry',{p_kind:kind,p_day:record.date,p_payload:record,p_revision:Object.prototype.hasOwnProperty.call(editVersions,kind+':'+date)?editVersions[kind+':'+date]:(old?old.revision:0)});
+        if(result.error){if(result.error.code==='40001'){delete editVersions[kind+':'+date];throw Error('다른 기기에서 같은 날짜를 수정했습니다. 입력 내용은 그대로 있습니다. 지금 동기화 후 내용을 확인하고 다시 저장해 주세요.');}throw Error('서버에 저장하지 못했습니다. 입력 내용은 그대로입니다. 연결을 확인하고 다시 저장해 주세요.');}
         if(scope()!==id||epoch!==token)throw Error('계정이 변경되었습니다. 다시 로그인해 주세요.');
-        rows=rows.filter(function(r){return !(r.kind===kind&&r.day===record.date)}).concat(result.data);
+        rows=rows.filter(function(r){return !(r.kind===kind&&r.day===record.date)}).concat(result.data);delete editVersions[kind+':'+date];
       }
       message('서버 저장 완료 · '+new Date().toLocaleTimeString('ko-KR'));
     }finally{busy=false;}
@@ -56,7 +57,10 @@
   document.getElementById('saveWorkout').onclick=handle(saveWorkout);
   document.getElementById('saveRest').onclick=handle(saveRest);
   document.getElementById('saveDiet').onclick=handle(async function(){await saveDiet();dietDirty=false});
-  document.getElementById('meals').addEventListener('input',function(){dietDirty=true});
+  function markEdit(kind,date){var key=kind+':'+date;if(!Object.prototype.hasOwnProperty.call(editVersions,key)){var row=rows.find(function(r){return r.kind===kind&&r.day===date});editVersions[key]=row?row.revision:0;}}
+  document.getElementById('work').addEventListener('input',function(){markEdit('workout',document.getElementById('wdate').value)});
+  document.getElementById('exercises').addEventListener('click',function(e){if(e.target.classList.contains('done'))markEdit('workout',document.getElementById('wdate').value)});
+  document.getElementById('meals').addEventListener('input',function(){dietDirty=true;markEdit('diet',document.getElementById('ddate').value)});
   document.getElementById('ddate').addEventListener('change',function(){dietDirty=false});
   document.getElementById('cloudSync').onclick=pull;
   document.getElementById('cloudImport').onclick=handle(async function(){
@@ -99,7 +103,7 @@
     var button=document.getElementById('cloudSignup');button.disabled=true;
     try{
       var r=await client.auth.signUp({email:document.getElementById('cloudEmail').value.trim(),password:password,options:{emailRedirectTo:location.origin+location.pathname}});
-      if(r.error)throw Error('계정 생성에 실패했습니다. 잠시 후 다시 시도해 주세요.');
+      if(r.error)throw Error(r.error.code==='email_address_not_authorized'?'현재 메일 발송 설정에서는 Supabase 가입에 사용한 이메일로 계정을 만들어 주세요.':'계정 생성 실패: '+r.error.message);
       message('이메일로 도착한 가입 확인 링크를 누른 뒤 여기서 로그인해 주세요.');
       document.getElementById('cloudPassword').value='';
     }finally{button.disabled=false;}
@@ -107,22 +111,23 @@
   async function init(){
     var cfg=window.WORKOUT_CLOUD;
     if(!cfg||!cfg.url||!cfg.publishableKey){message('서버 연결 준비 중 · 현재는 기기에만 저장됩니다.');return;}
+    initializing=true;
     try{
       var sdk=await import('https://esm.sh/@supabase/supabase-js@2.57.4');
       client=sdk.createClient(cfg.url,cfg.publishableKey,{auth:{storageKey:'workout-cloud-auth-v1',persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});
       document.getElementById('cloudLoginButton').disabled=false;
       document.getElementById('cloudSignup').disabled=false;
       client.auth.onAuthStateChange(function(event,session){
-        var next=session&&session.user;
+        initializing=false;var next=session&&session.user;
         if((next&&next.id)===(user&&user.id)){if(!next)message('로그인하면 다른 기기와 기록을 공유할 수 있어요.');return;}
-        epoch++;user=next;ready=false;rows=[];dietDirty=false;
+        epoch++;user=next;ready=false;rows=[];dietDirty=false;editVersions={};
         controls();clearDiet();renderExercises();repaint();
         if(user){message('서버 기록을 가져오는 중…');setTimeout(pull,0);}else message('로그아웃됨 · 현재는 기기에만 저장됩니다.');
       });
       setInterval(function(){if(document.visibilityState==='visible')pull()},30000);
       window.addEventListener('online',pull);
       document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible')pull()});
-    }catch(e){message('로그인 연결 실패 · 기기 저장은 계속 사용할 수 있습니다.');}
+    }catch(e){initializing=false;message('로그인 연결 실패 · 기기 저장은 계속 사용할 수 있습니다.');}
   }
   init();
 })();
