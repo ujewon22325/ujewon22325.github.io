@@ -1,0 +1,21 @@
+const vm=require('node:vm'),fs=require('node:fs'),assert=require('node:assert/strict');
+(async()=>{
+const elements=new Map();const el=id=>{if(!elements.has(id))elements.set(id,{value:'',textContent:'',addEventListener(){},reportValidity(){return true}});return elements.get(id)};
+let authCallback,remote=[],conflict=false,fail=false,calls=[];
+const client={auth:{onAuthStateChange(fn){authCallback=fn},async signOut(){authCallback('SIGNED_OUT',null);return{};}},from(){return{select(){return this},eq(k,id){this.id=id;return this},order(){return this},async range(){return{data:remote,error:fail?new Error('offline'):null}}}},async rpc(name,args){calls.push(args);if(conflict)return{error:{code:'40001'}};return{data:[{kind:args.p_kind,day:args.p_day,payload:args.p_payload,revision:args.p_revision+1}]}}};
+let timers=[],guest=[],alerts=[];
+const context={window:null,document:{getElementById:el,querySelector:el,visibilityState:'visible',addEventListener(){}},location:{origin:'https://example.com',pathname:'/workout/'},loadWork:()=>guest,loadDiet:()=>[],saveWork:a=>{guest=a},saveDietData(){},saveWorkout(){},saveRest(){},saveDiet(){},refresh(){},loadDietForm(){},clearDiet(){},renderExercises(){},alert:s=>alerts.push(s),confirm:()=>true,setTimeout:fn=>timers.push(fn),setInterval(){},WORKOUT_CLOUD:{url:'https://example.supabase.co',publishableKey:'public'},testSdk:{createClient:()=>client},addEventListener(){},console};context.window=context;
+let source=fs.readFileSync(__dirname+'/cloud.js','utf8').replace("await import('https://esm.sh/@supabase/supabase-js@2.57.4')",'testSdk');vm.runInNewContext(source,context);
+const flush=async()=>{while(timers.length)await timers.shift()()};
+authCallback('INITIAL_SESSION',null);
+await context.saveWork([{date:'2026-09-21'}],'2026-09-21');assert.equal(guest.length,1);
+authCallback('SIGNED_IN',{user:{id:'one',email:'one@example.test'}});await flush();
+assert.equal(context.loadWork().length,0,'guest records must not auto-upload');
+await context.saveWork([{date:'2026-09-20'},{date:'2026-09-22',type:'rest'}],'2026-09-22');assert.equal(calls.length,1,'only the edited date is saved');assert.equal(context.loadWork()[0].date,'2026-09-22');
+conflict=true;await assert.rejects(context.saveWork([{date:'2026-09-22',type:'workout'}],'2026-09-22'),/다른 기기/);assert.equal(context.loadWork()[0].type,'rest','failed save must not change confirmed cache');conflict=false;
+authCallback('SIGNED_IN',{user:{id:'two',email:'two@example.test'}});await flush();assert.equal(context.loadWork().length,0,'account data must not leak');
+fail=true;await el('cloudSync').onclick();assert.match(el('cloudStatus').textContent,/서버 연결 실패/);fail=false;
+authCallback('SIGNED_OUT',null);assert.equal(context.loadWork()[0].date,'2026-09-21','guest data remains intact');
+const html=fs.readFileSync(__dirname+'/index.html','utf8');new vm.Script(html.match(/<script>([\s\S]*?)<\/script>/)[1]);assert.ok(html.includes('await saveWork(h,rec.date)'));
+console.log('PASS: guest preservation, explicit migration, per-date write, conflict protection, account isolation, failure status, script syntax');
+})().catch(e=>{console.error(e);process.exit(1)});
