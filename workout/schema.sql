@@ -12,7 +12,7 @@ create table public.workout_entries (
 alter table public.workout_entries enable row level security;
 create policy own_entries on public.workout_entries for all to authenticated
   using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
-revoke all on public.workout_entries from anon;
+revoke all on public.workout_entries from public, anon, authenticated;
 grant select, insert, update on public.workout_entries to authenticated;
 
 -- Optimistic concurrency prevents an old browser overwriting a newer device edit.
@@ -36,3 +36,6 @@ end;
 $$;
 revoke all on function public.save_workout_entry(text,date,jsonb,bigint) from public, anon;
 grant execute on function public.save_workout_entry(text,date,jsonb,bigint) to authenticated;
+
+-- Restrict the dashboard-created RLS event trigger to administrative use.
+revoke execute on function public.rls_auto_enable() from public, anon, authenticated;
