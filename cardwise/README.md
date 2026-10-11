@@ -93,7 +93,7 @@ tests/app.spec.ts         Playwright 사용자 흐름
 
 ## 정적 배포
 
-`base`는 `/cardwise/`입니다. **소스 디렉터리를 그대로 올리면 실행되지 않습니다.** `npm run build` 결과인 `dist/` 내용을 사이트의 `/cardwise/` 디렉터리에 배포하세요. 기존 `.github/workflows/deploy-pages.yml`은 main 배포 시 CardWise 설치·계산 테스트·타입 검사·빌드를 실행하고, 기존 정적 앱과 빌드 결과만 Pages artifact로 만듭니다. `node_modules`, 사용자 파일, 테스트 결과, TypeScript 소스는 artifact에 포함하지 않습니다.
+`base`는 `/cardwise/`입니다. **개발 소스는 `src/`에 있고, 루트의 `index.html`과 `assets/`는 정적 배포용 빌드 파일입니다.** `npm run build` 결과인 `dist/` 내용을 사이트의 `/cardwise/` 디렉터리에 배포하세요. 기존 `.github/workflows/deploy-pages.yml`은 main 배포 시 CardWise 설치·계산 테스트·타입 검사·빌드를 실행하고, 기존 정적 앱과 빌드 결과만 Pages artifact로 만듭니다. `node_modules`, 사용자 파일, 테스트 결과, TypeScript 소스는 artifact에 포함하지 않습니다.
 
 ```sh
 cd /workspace/ujewon22325.github.io/cardwise
@@ -102,5 +102,7 @@ npm run build
 cd ..
 python3 cardwise/scripts/prepare-pages.py /tmp/cardwise-pages-output
 ```
+
+기존 Pages 설정이 main 브랜치를 직접 게시하는 방식이어도 실행되도록 빌드된 `index.html`과 `assets/`를 함께 관리합니다. 앱 소스를 변경한 뒤에는 `npm run stage:static`으로 이 정적 파일을 갱신하고 같이 커밋하세요. 개발 서버는 `src/index.html`을 사용하므로 정적 파일과 분리됩니다.
 
 빈 출력 디렉터리를 사용하세요. 이 명령은 **배포하지 않고** artifact만 만듭니다. 검증 후 코드를 main에 반영하고 GitHub Pages 배포가 성공해야 공개 주소가 생깁니다. 환경 스냅샷 게시와 GitHub Pages 앱 배포는 별개입니다. main에 코드가 반영되면 GitHub Actions가 테스트와 빌드를 통과한 결과를 GitHub Pages에 자동 배포합니다.

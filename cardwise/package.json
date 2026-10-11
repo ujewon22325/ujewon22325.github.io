@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite --host 127.0.0.1",
     "build": "tsc -b && vite build",
+    "stage:static": "npm run build && node scripts/stage-static.mjs",
     "typecheck": "tsc -b",
     "test": "vitest run",
     "test:e2e": "playwright test",
