@@ -1,0 +1,410 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    font-family:
+      -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", sans-serif;
+    font-synthesis: none;
+    color: #182b25;
+    background: #f5f7f6;
+  }
+  body {
+    @apply m-0 min-w-[320px] antialiased dark:bg-slate-950 dark:text-slate-100;
+  }
+  * {
+    box-sizing: border-box;
+  }
+  input:not([type="checkbox"]):not([type="file"]),
+  select,
+  textarea {
+    @apply min-h-11 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm outline-none transition focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/10 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100;
+  }
+  input[type="checkbox"] {
+    @apply h-4 w-4 flex-none accent-emerald-700;
+  }
+  button,
+  a,
+  input,
+  select,
+  summary {
+    touch-action: manipulation;
+  }
+  button:focus-visible,
+  a:focus-visible,
+  summary:focus-visible {
+    @apply outline outline-2 outline-offset-2 outline-emerald-600;
+  }
+  h2 {
+    @apply text-base font-bold tracking-tight;
+  }
+  small {
+    @apply mt-1 block text-xs text-slate-500 dark:text-slate-400;
+  }
+}
+@layer components {
+  .app-shell {
+    @apply min-h-screen;
+  }
+  .sidebar {
+    @apply fixed inset-y-0 left-0 z-30 hidden w-60 border-r border-slate-200/80 bg-white px-5 py-9 lg:flex lg:flex-col dark:border-slate-800 dark:bg-slate-900;
+  }
+  .brand {
+    @apply mb-12 flex items-center gap-3 px-2 text-xl font-extrabold tracking-tight;
+  }
+  .brand-mark {
+    @apply flex h-10 w-10 flex-none items-center justify-center rounded-xl bg-emerald-800 text-white;
+  }
+  .brand-sub {
+    @apply mt-1 block text-[10px] font-medium tracking-normal text-slate-500;
+  }
+  .nav-label {
+    @apply mb-4 px-3 text-[10px] font-bold tracking-[0.16em] text-slate-400;
+  }
+  .nav-item {
+    @apply mb-2 flex min-h-12 w-full items-center gap-3 rounded-xl px-3 text-sm font-medium text-slate-500 transition hover:bg-slate-50 dark:text-slate-400 dark:hover:bg-slate-800;
+  }
+  .nav-item.active {
+    @apply bg-emerald-50 font-bold text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300;
+  }
+  .sidebar-bottom {
+    @apply mt-auto rounded-2xl bg-slate-50 p-4 text-emerald-800 dark:bg-slate-800 dark:text-emerald-300;
+  }
+  .sidebar-bottom strong {
+    @apply my-2 block text-xs;
+  }
+  .sidebar-bottom p {
+    @apply mb-3 text-[11px] leading-5 text-slate-500;
+  }
+  .main-shell {
+    @apply lg:ml-60;
+  }
+  .topbar {
+    @apply flex h-20 items-center justify-between border-b border-slate-200/70 bg-white/90 px-5 sm:px-8 lg:px-10 dark:border-slate-800 dark:bg-slate-900;
+  }
+  .desktop-breadcrumb {
+    @apply hidden items-center gap-3 text-xs text-slate-400 lg:flex;
+  }
+  .desktop-breadcrumb span {
+    @apply text-slate-700 dark:text-slate-200;
+  }
+  .mobile-brand {
+    @apply flex items-center gap-2 lg:hidden;
+  }
+  main {
+    @apply mx-auto max-w-[1540px] px-4 pb-28 pt-7 sm:px-8 sm:pt-9 lg:px-10 lg:pb-8;
+  }
+  .page-heading {
+    @apply mb-6 flex flex-col justify-between gap-5 xl:flex-row xl:items-center;
+  }
+  .eyebrow {
+    @apply mb-2 text-[10px] font-bold tracking-[0.14em] text-emerald-700 dark:text-emerald-400;
+  }
+  h1 {
+    @apply text-[27px] font-extrabold tracking-[-0.055em] sm:text-[32px];
+  }
+  .subtitle {
+    @apply mt-2 text-sm leading-6 text-slate-500 dark:text-slate-400;
+  }
+  .heading-controls {
+    @apply flex items-center gap-2;
+  }
+  .heading-controls input {
+    @apply max-w-[155px];
+  }
+  .workspace-toggle {
+    @apply mb-6 flex flex-wrap items-center justify-between gap-3 text-xs text-slate-500;
+  }
+  .workspace-toggle > div {
+    @apply inline-flex rounded-xl bg-slate-200/60 p-1 dark:bg-slate-800;
+  }
+  .workspace-toggle button {
+    @apply min-h-9 rounded-lg px-4 text-xs font-semibold;
+  }
+  .workspace-toggle button[aria-pressed="true"] {
+    @apply bg-white text-emerald-800 shadow-sm dark:bg-slate-700 dark:text-emerald-300;
+  }
+  .panel {
+    @apply rounded-2xl border border-slate-200/80 bg-white p-5 shadow-[0_2px_12px_rgba(20,50,40,0.025)] sm:p-6 dark:border-slate-800 dark:bg-slate-900;
+  }
+  .metric-grid {
+    @apply mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4;
+  }
+  .metric h2 {
+    @apply text-xs font-medium text-slate-500 dark:text-slate-400;
+  }
+  .metric span {
+    @apply flex h-9 w-9 items-center justify-center rounded-xl bg-slate-50 text-slate-400 dark:bg-slate-800;
+  }
+  .metric-value {
+    @apply mb-3 mt-5 text-[26px] font-extrabold tracking-[-0.04em] tabular-nums 2xl:text-3xl;
+  }
+  .metric p {
+    @apply text-[11px] leading-5 text-slate-400;
+  }
+  .metric-accent {
+    @apply border-emerald-700 bg-emerald-800 text-white dark:bg-emerald-900;
+  }
+  .metric-accent h2,
+  .metric-accent p {
+    @apply text-emerald-100/80;
+  }
+  .metric-accent span {
+    @apply bg-white/10 text-emerald-100;
+  }
+  .dashboard-grid {
+    @apply mb-6 grid gap-6 xl:grid-cols-[1.6fr_1fr];
+  }
+  .section-heading {
+    @apply mb-5 flex flex-wrap items-center justify-between gap-3;
+  }
+  .section-heading p {
+    @apply mt-2 text-xs leading-5 text-slate-400;
+  }
+  .chart {
+    @apply h-64 w-full min-w-0 sm:h-72;
+  }
+  .chart-legend {
+    @apply mt-3 flex justify-center gap-5 text-[11px] text-slate-500;
+  }
+  .chart-legend span {
+    @apply flex items-center gap-2;
+  }
+  .chart-legend i {
+    @apply h-2 w-2 rounded-full;
+  }
+  .insight-panel {
+    @apply border-emerald-100 bg-[#f0f7f3] dark:border-emerald-900 dark:bg-emerald-950/40;
+  }
+  .insight-icon {
+    @apply flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-300;
+  }
+  .insight-value {
+    @apply mb-2 mt-6 text-3xl font-extrabold tracking-tight;
+  }
+  .insight-panel p {
+    @apply mb-4 mt-2 text-xs leading-6 text-slate-500 dark:text-slate-400;
+  }
+  .insight-divider {
+    @apply mb-5 mt-3 border-t border-emerald-200/70 dark:border-emerald-900;
+  }
+  .status-row {
+    @apply flex items-center gap-3 border-b border-slate-100 py-4 last:border-0 dark:border-slate-800;
+  }
+  .status-row strong {
+    @apply block text-xs sm:text-sm;
+  }
+  .mini-card {
+    @apply flex h-10 w-10 flex-none items-center justify-center rounded-xl bg-slate-100 text-slate-500 dark:bg-slate-800;
+  }
+  .badge {
+    @apply inline-flex flex-none items-center rounded-md px-2 py-1 text-[10px] font-semibold leading-4;
+  }
+  .badge-neutral {
+    @apply bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300;
+  }
+  .badge-green {
+    @apply bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300;
+  }
+  .badge-amber {
+    @apply bg-amber-50 text-amber-800 dark:bg-amber-950 dark:text-amber-300;
+  }
+  .badge-blue {
+    @apply bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300;
+  }
+  .recent-row {
+    @apply flex min-h-16 w-full items-center gap-3 border-b border-slate-100 py-3 text-left last:border-0 dark:border-slate-800;
+  }
+  .recent-row strong {
+    @apply block text-xs;
+  }
+  .merchant-icon {
+    @apply flex h-10 w-10 flex-none items-center justify-center rounded-xl bg-slate-50 text-sm font-bold text-slate-500 dark:bg-slate-800;
+  }
+  .tip {
+    @apply mt-5 flex items-start gap-2 rounded-xl bg-slate-50 p-3 text-[11px] leading-5 text-slate-500 dark:bg-slate-800;
+  }
+  .tip svg {
+    @apply mt-1 flex-none text-emerald-700;
+  }
+  .fine-print {
+    @apply mt-5 text-[11px] leading-6 text-slate-400;
+  }
+  .app-footer {
+    @apply mt-10 flex items-center justify-center gap-2 text-center text-[10px] leading-5 text-slate-400;
+  }
+  .mobile-nav {
+    @apply fixed inset-x-0 bottom-0 z-40 flex justify-around border-t border-slate-200 bg-white px-1 pb-[env(safe-area-inset-bottom)] lg:hidden dark:border-slate-800 dark:bg-slate-900;
+  }
+  .mobile-nav button {
+    @apply flex min-h-16 flex-1 flex-col items-center justify-center gap-1 text-[10px] text-slate-400;
+  }
+  .mobile-nav button[aria-current="page"] {
+    @apply text-emerald-800 dark:text-emerald-400;
+  }
+  .modal {
+    @apply fixed left-1/2 top-1/2 z-50 max-h-[90dvh] w-[calc(100%-24px)] max-w-3xl -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-2xl bg-white p-5 shadow-xl outline-none sm:p-7 dark:bg-slate-900 dark:text-slate-100;
+  }
+  .field {
+    @apply flex min-w-0 flex-col gap-2 text-xs font-medium;
+  }
+  .field small {
+    @apply font-normal leading-5;
+  }
+  .check {
+    @apply flex min-h-11 items-center gap-2 text-sm;
+  }
+  .chip-check {
+    @apply flex min-h-10 items-center gap-2 rounded-lg border border-slate-200 px-3 text-xs dark:border-slate-700;
+  }
+  .benefit-editor {
+    @apply mb-4 rounded-xl border border-slate-200 p-4 dark:border-slate-700;
+  }
+  .advanced {
+    @apply rounded-xl border border-slate-200 bg-slate-50/70 p-4 text-sm dark:border-slate-700 dark:bg-slate-800/30;
+  }
+  .advanced summary {
+    @apply min-h-6 cursor-pointer font-medium;
+  }
+  .notice {
+    @apply rounded-xl border border-amber-200 bg-amber-50 p-4 text-xs leading-6 text-amber-900 dark:border-amber-900 dark:bg-amber-950/40 dark:text-amber-200;
+  }
+  .error {
+    @apply whitespace-pre-wrap rounded-xl border border-red-200 bg-red-50 p-4 text-sm leading-6 text-red-800 dark:border-red-900 dark:bg-red-950 dark:text-red-200;
+  }
+  .success {
+    @apply flex items-center gap-2 rounded-xl bg-emerald-50 p-4 text-sm text-emerald-800 dark:bg-emerald-950 dark:text-emerald-200;
+  }
+  .empty-state {
+    @apply mb-6 py-10 text-center;
+  }
+  .empty-state h2 {
+    @apply mb-2 mt-5 text-lg;
+  }
+  .empty-state p {
+    @apply mb-5 text-sm leading-6 text-slate-500;
+  }
+  .empty-icon {
+    @apply inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700 dark:bg-emerald-950;
+  }
+  .empty-copy {
+    @apply py-12 text-center text-sm text-slate-500;
+  }
+  .table-wrap {
+    @apply w-full overflow-x-auto;
+  }
+  table {
+    @apply w-full border-collapse text-left text-xs;
+  }
+  th {
+    @apply whitespace-nowrap border-b border-slate-200 bg-slate-50/70 px-3 py-3 text-[11px] font-medium text-slate-500 dark:border-slate-700 dark:bg-slate-800;
+  }
+  td {
+    @apply border-b border-slate-100 px-3 py-4 leading-5 dark:border-slate-800;
+  }
+  td strong {
+    @apply font-semibold;
+  }
+  .amount-link {
+    @apply inline-flex min-h-11 items-center gap-1 font-bold text-emerald-700 underline decoration-emerald-200 underline-offset-4 dark:text-emerald-300;
+  }
+  .filters {
+    @apply mb-5 flex flex-col gap-3 sm:flex-row;
+  }
+  .filters select {
+    @apply sm:max-w-44;
+  }
+  .search {
+    @apply flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 sm:w-80 dark:border-slate-700 dark:bg-slate-900;
+  }
+  .search input {
+    @apply !border-0 !px-0 !ring-0;
+  }
+  .card-grid {
+    @apply grid gap-5 sm:grid-cols-2 2xl:grid-cols-3;
+  }
+  .card-art {
+    @apply relative h-36 overflow-hidden rounded-xl p-5 text-white;
+  }
+  .card-art:after {
+    content: "";
+    position: absolute;
+    width: 160px;
+    height: 160px;
+    border: 1px solid #ffffff33;
+    border-radius: 50%;
+    right: -55px;
+    top: -40px;
+    box-shadow:
+      0 0 0 22px #ffffff08,
+      0 0 0 44px #ffffff05;
+  }
+  .art-0 {
+    background: linear-gradient(120deg, #183b32, #537d68);
+  }
+  .art-1 {
+    background: linear-gradient(120deg, #283c54, #6b82a1);
+  }
+  .art-2 {
+    background: linear-gradient(120deg, #504938, #96835f);
+  }
+  .art-3 {
+    background: linear-gradient(120deg, #403752, #776b91);
+  }
+  .card-art span {
+    @apply absolute right-5 top-5 max-w-[60%] text-right text-[10px];
+  }
+  .card-art-number {
+    @apply mt-4 text-xs tracking-[0.13em] opacity-70;
+  }
+  .card-art strong {
+    @apply mt-3 block text-[9px] tracking-[0.2em] opacity-70;
+  }
+  .card-panel h2 {
+    @apply text-sm leading-6;
+  }
+  .upload-area {
+    @apply flex flex-col items-center gap-3 rounded-2xl border-2 border-dashed border-slate-200 bg-slate-50 p-6 text-center text-emerald-700 dark:border-slate-700 dark:bg-slate-800;
+  }
+  .upload-area p {
+    @apply text-xs text-slate-500;
+  }
+  .file-button {
+    @apply relative inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-xl bg-emerald-700 px-4 py-2 text-sm font-semibold text-white focus-within:ring-2 focus-within:ring-emerald-500;
+  }
+  .file-button input {
+    @apply absolute inset-0 w-full cursor-pointer opacity-0;
+  }
+  .file-button.secondary {
+    @apply border border-slate-200 bg-white text-slate-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200;
+  }
+  .settings-grid {
+    @apply grid gap-6 sm:grid-cols-2;
+  }
+  .dictionary-row {
+    @apply flex items-center gap-1 rounded-xl border border-slate-200 p-1 dark:border-slate-700;
+  }
+  .dictionary-row input,
+  .dictionary-row select {
+    @apply !border-0 !px-2 text-xs;
+  }
+  .dictionary-row select {
+    @apply max-w-[105px];
+  }
+  .detail-grid {
+    @apply grid grid-cols-2 gap-3 sm:grid-cols-3;
+  }
+  .detail-grid > div {
+    @apply rounded-xl bg-slate-50 p-3 dark:bg-slate-800;
+  }
+  .detail-grid span {
+    @apply block text-xs text-slate-500;
+  }
+  .detail-grid strong {
+    @apply mt-2 block text-sm tabular-nums;
+  }
+  .reason-list {
+    @apply mt-4 list-disc space-y-3 pl-5 text-sm leading-6;
+  }
+}

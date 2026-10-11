@@ -23,6 +23,20 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+          cache-dependency-path: "cardwise/package-lock.json"
+      - name: Install CardWise
+        run: npm ci --prefix cardwise
+      - name: Test CardWise calculations
+        run: npm test --prefix cardwise
+      - name: Build CardWise
+        run: npm run build --prefix cardwise
+      - name: Prepare static site
+        run: python3 cardwise/scripts/prepare-pages.py "$RUNNER_TEMP/pages-output"
       - name: Setup Pages
         uses: actions/configure-pages@v5
         with:
@@ -30,7 +44,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: "."
+          path: "${{ runner.temp }}/pages-output"
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
