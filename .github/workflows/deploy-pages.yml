@@ -37,6 +37,15 @@ jobs:
         run: npm run build --prefix cardwise
       - name: Prepare static site
         run: python3 cardwise/scripts/prepare-pages.py "$RUNNER_TEMP/pages-output"
+      - name: Use the built workflow as the Pages source
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.repos.updateInformationAboutPagesSite({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              build_type: 'workflow'
+            });
       - name: Setup Pages
         uses: actions/configure-pages@v5
         with:
